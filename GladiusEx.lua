@@ -745,13 +745,26 @@ function GladiusEx:CheckOpponentSpecialization(unit)
 			if not GladiusEx.IS_TBCC then
 				specID = self:FindSpecByPower(unit)
 			end
-			
+						
 			if not specID then
 				specID = self:FindSpecByAuras(unit)
 			end
+			
+			self:UpdateUnitSpecialization(unit, specID)
+
+			if not specID and GladiusEx.Data.FindSpecByElimination then
+				C_Timer.After(0.4, function() 
+					if not GladiusEx.Data.GetArenaOpponentSpec(tonumber(id)) then 
+						local specID = GladiusEx.Data.FindSpecByElimination(unit)
+						if specID then
+							print("Found spec by elimination", specID)
+							self:UpdateUnitSpecialization(unit, specID) 
+						end 
+					end 
+				end)
+			end
         end
 
-        self:UpdateUnitSpecialization(unit, specID)
     end
 end
 
@@ -761,7 +774,7 @@ function GladiusEx:FindSpecByPower(unit)
 	if class then
 		local p = UnitPowerMax(unit, 0)
 		local limit = GladiusEx.Data.SpecManaLimit
-		if p then
+		if p and p > 500 then
 			if class == "PALADIN" and p > limit then
 				specID = 65 -- Holy
 			elseif class == "DRUID" and p < limit then

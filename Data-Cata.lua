@@ -671,3 +671,11 @@ end
 function GladiusEx.Data.GetNumArenaOpponentSpecs()
     return nil
 end
+
+function GladiusEx.Data.FindSpecByElimination(unit)
+    local _, class = UnitClass(unit)
+
+    if class == "SHAMAN" then
+        return 264 -- Enhance is detected by low mana, all Elementals are detected by Elemental Oath, so unknown Shamans have to be Resto
+    end
+end
